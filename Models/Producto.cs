@@ -10,6 +10,7 @@ namespace BackendCotizacionApp.Models
         public int idProducto { get; set; }
         public int idUsuario { get; set; }
         public int idCategoria { get; set; }
+        public string urlFotoProducto { get; set; }
         public string descripcionProducto { get; set; }
         public double precio { get; set; }
         public int tipo { get; set; }
