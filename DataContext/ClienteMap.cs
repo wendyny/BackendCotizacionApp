@@ -17,8 +17,8 @@ namespace BackendCotizacionApp.DataContext
             builder.Property(c => c.idCliente).IsRequired().UseIdentityColumn();
             builder.Property(c => c.nombreCliente).HasColumnType("varchar(50)").HasMaxLength(50).IsRequired();
             builder.Property(c => c.email).HasColumnType("varchar(50)").HasMaxLength(50).IsRequired();
-            builder.Property(c => c.telefono).HasColumnType("int").IsRequired();
-            
+            builder.Property(c => c.telefono).HasColumnType("varchar(50)").HasMaxLength(50).IsRequired();
+
         }
     }
 }
