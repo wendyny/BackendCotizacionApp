@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BackendCotizacionApp.DataContext;
 using BackendCotizacionApp.Models;
+using BackendCotizacionApp.AppServices;
 
 namespace BackendCotizacionApp.Controllers
 {
@@ -15,20 +16,21 @@ namespace BackendCotizacionApp.Controllers
     public class UsuariosController : ControllerBase
     {
         private readonly CotizacionAppDbContext _context;
+        private readonly UsuarioAppService _usuarioAppService;
 
-        public UsuariosController(CotizacionAppDbContext context)
+        public UsuariosController(CotizacionAppDbContext context, UsuarioAppService usuarioAppService)
         {
             _context = context;
+            _usuarioAppService = usuarioAppService;
         }
 
-        // GET: api/Usuarios
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuarios()
         {
-            return await _context.Usuarios.ToListAsync();
+            return await _context.Usuarios.Include(u=>u.Cotizaciones).ToListAsync();
         }
 
-        // GET: api/Usuarios/5
+       
         [HttpGet("{id}")]
         public async Task<ActionResult<Usuario>> GetUsuario(int id)
         {
@@ -42,9 +44,7 @@ namespace BackendCotizacionApp.Controllers
             return usuario;
         }
 
-        // PUT: api/Usuarios/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+       
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUsuario(int id, Usuario usuario)
         {
@@ -55,38 +55,28 @@ namespace BackendCotizacionApp.Controllers
 
             _context.Entry(usuario).State = EntityState.Modified;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UsuarioExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
 
-            return NoContent();
+            await _context.SaveChangesAsync();
+                  return NoContent();
         }
 
-        // POST: api/Usuarios
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        
         [HttpPost]
         public async Task<ActionResult<Usuario>> PostUsuario(Usuario usuario)
         {
-            _context.Usuarios.Add(usuario);
-            await _context.SaveChangesAsync();
+            var respuestaUsuarioAppService = await _usuarioAppService.PostUsuarioApplicationService(usuario);
+            bool noHayErrorEnValidaciones = respuestaUsuarioAppService == null;
+            if (noHayErrorEnValidaciones)
+            {
+                return CreatedAtAction("GetUsuario", new { id = usuario.idUsuario }, usuario);
+            }
 
-            return CreatedAtAction("GetUsuario", new { id = usuario.idUsuario }, usuario);
+            return BadRequest(respuestaUsuarioAppService);
+         
+            
         }
 
-        // DELETE: api/Usuarios/5
+        
         [HttpDelete("{id}")]
         public async Task<ActionResult<Usuario>> DeleteUsuario(int id)
         {

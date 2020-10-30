@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BackendCotizacionApp.DataContext;
 using BackendCotizacionApp.Models;
+using BackendCotizacionApp.AppServices;
 
 namespace BackendCotizacionApp.Controllers
 {
@@ -15,20 +16,23 @@ namespace BackendCotizacionApp.Controllers
     public class ClientesController : ControllerBase
     {
         private readonly CotizacionAppDbContext _context;
+        private readonly ClienteAppService _clienteAppService;
 
-        public ClientesController(CotizacionAppDbContext context)
+        public ClientesController(CotizacionAppDbContext context, ClienteAppService clienteAppService)
         {
             _context = context;
+            _clienteAppService = clienteAppService;
+
         }
 
-        // GET: api/Clientes
+       
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Cliente>>> GetClientes()
         {
             return await _context.Clientes.ToListAsync();
         }
 
-        // GET: api/Clientes/5
+       
         [HttpGet("{id}")]
         public async Task<ActionResult<Cliente>> GetCliente(int id)
         {
@@ -42,9 +46,7 @@ namespace BackendCotizacionApp.Controllers
             return cliente;
         }
 
-        // PUT: api/Clientes/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCliente(int id, Cliente cliente)
         {
@@ -55,38 +57,30 @@ namespace BackendCotizacionApp.Controllers
 
             _context.Entry(cliente).State = EntityState.Modified;
 
-            try
-            {
+           
                 await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ClienteExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            
 
             return NoContent();
         }
 
-        // POST: api/Clientes
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+       
         [HttpPost]
         public async Task<ActionResult<Cliente>> PostCliente(Cliente cliente)
         {
-            _context.Clientes.Add(cliente);
-            await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCliente", new { id = cliente.idCliente }, cliente);
+            var respuestaClienteAppService = await _clienteAppService.PostClienteApplicationService(cliente);
+            bool noHayErrorEnValidaciones = respuestaClienteAppService == null;
+            if (noHayErrorEnValidaciones)
+            {
+                return CreatedAtAction("GetCliente", new { id = cliente.idCliente }, cliente);
+            }
+
+            return BadRequest(respuestaClienteAppService);   
+            
         }
 
-        // DELETE: api/Clientes/5
+        
         [HttpDelete("{id}")]
         public async Task<ActionResult<Cliente>> DeleteCliente(int id)
         {

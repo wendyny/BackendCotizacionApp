@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BackendCotizacionApp.DataContext;
 using BackendCotizacionApp.Models;
+using BackendCotizacionApp.AppServices;
 
 namespace BackendCotizacionApp.Controllers
 {
@@ -15,20 +16,22 @@ namespace BackendCotizacionApp.Controllers
     public class CotizacionesController : ControllerBase
     {
         private readonly CotizacionAppDbContext _context;
+        private readonly CotizacionAppService _cotizacionAppService;
 
-        public CotizacionesController(CotizacionAppDbContext context)
+        public CotizacionesController(CotizacionAppDbContext context, CotizacionAppService cotizacionAppService)
         {
             _context = context;
+            _cotizacionAppService = cotizacionAppService;
         }
 
-        // GET: api/Cotizaciones
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Cotizacion>>> GetCotizaciones()
         {
             return await _context.Cotizaciones.ToListAsync();
         }
 
-        // GET: api/Cotizaciones/5
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Cotizacion>> GetCotizacion(int id)
         {
@@ -42,9 +45,7 @@ namespace BackendCotizacionApp.Controllers
             return cotizacion;
         }
 
-        // PUT: api/Cotizaciones/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCotizacion(int id, Cotizacion cotizacion)
         {
@@ -55,28 +56,14 @@ namespace BackendCotizacionApp.Controllers
 
             _context.Entry(cotizacion).State = EntityState.Modified;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CotizacionExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+
+            await _context.SaveChangesAsync();
+
 
             return NoContent();
         }
 
-        // POST: api/Cotizaciones
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+
         [HttpPost]
         public async Task<ActionResult<Cotizacion>> PostCotizacion(Cotizacion cotizacion)
         {
@@ -86,7 +73,7 @@ namespace BackendCotizacionApp.Controllers
             return CreatedAtAction("GetCotizacion", new { id = cotizacion.idCotizacion }, cotizacion);
         }
 
-        // DELETE: api/Cotizaciones/5
+
         [HttpDelete("{id}")]
         public async Task<ActionResult<Cotizacion>> DeleteCotizacion(int id)
         {
@@ -108,3 +95,4 @@ namespace BackendCotizacionApp.Controllers
         }
     }
 }
+

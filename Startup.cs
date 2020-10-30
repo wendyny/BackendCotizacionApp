@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BackendCotizacionApp.AppServices;
 using BackendCotizacionApp.DataContext;
+using BackendCotizacionApp.DomainServices;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -28,6 +30,12 @@ namespace BackendCotizacionApp
         {
             services.AddControllers();
             services.AddDbContext<CotizacionAppDbContext>();
+            services.AddScoped<UsuarioAppService>();
+            services.AddScoped<ClienteAppService>();
+            services.AddScoped<UsuarioAppService>();
+            services.AddScoped<ClienteDomainService>();
+            services.AddScoped<CotizacionDomainService>();
+            services.AddScoped<UsuarioDomainService>();
             services.AddMvc().AddNewtonsoftJson(option => option.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             services.AddControllers();
         }
