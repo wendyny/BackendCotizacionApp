@@ -1,10 +1,13 @@
 ﻿using BackendCotizacionApp.DataContext;
 using BackendCotizacionApp.DomainServices;
 using BackendCotizacionApp.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+
 
 namespace BackendCotizacionApp.AppServices
 {
@@ -18,10 +21,10 @@ namespace BackendCotizacionApp.AppServices
             _baseDatos = _context;
             _clienteDomainService = clienteDomainService;
         }
-        public async Task<string> PostClienteApplicationService(Cliente cliente)
+        public async Task<string> GetClienteApplicationService(int id)
         {
-
-            var respuestaDomainService = _clienteDomainService.PostClienteDomainService(cliente);
+            var cliente = await _baseDatos.Clientes.FirstOrDefaultAsync(c => c.idCliente == id);
+            var respuestaDomainService = _clienteDomainService.GetClienteDomainService(id,cliente);
 
             bool hayErrorEnElDomainService = respuestaDomainService != null;
             if (hayErrorEnElDomainService)

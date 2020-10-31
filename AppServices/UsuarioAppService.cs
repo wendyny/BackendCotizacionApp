@@ -1,6 +1,7 @@
 ﻿using BackendCotizacionApp.DataContext;
 using BackendCotizacionApp.DomainServices;
 using BackendCotizacionApp.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,9 +19,10 @@ namespace BackendCotizacionApp.AppServices
             _baseDatos = _context;
             _usuarioDomainService = usuarioDomainService;
         }
-        public async Task<string> PostUsuarioApplicationService(Usuario usuario)
+        public async Task<string> GetUsuarioApplicationService(int id)
         {
-            var respuestaDomainService = _usuarioDomainService.PostUsuarioDomainService(usuario);
+            var usuario = await _baseDatos.Usuarios.FirstOrDefaultAsync(c => c.idUsuario == id);
+            var respuestaDomainService = _usuarioDomainService.GetUsuarioDomainService(id,usuario);
 
             bool hayErrorEnElDomainService = respuestaDomainService != null;
             if (hayErrorEnElDomainService)
