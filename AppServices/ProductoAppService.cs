@@ -7,45 +7,45 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-
-
 namespace BackendCotizacionApp.AppServices
 {
-    public class ClienteAppService
+    public class ProductoAppService
     {
         private readonly CotizacionAppDbContext _baseDatos;
-        private readonly ClienteDomainService _clienteDomainService;
+        private readonly ProductoDomainService _productoDomainService;
 
-        public ClienteAppService(CotizacionAppDbContext _context, ClienteDomainService clienteDomainService)
+        public ProductoAppService(CotizacionAppDbContext _context, ProductoDomainService productoDomainService)
         {
             _baseDatos = _context;
-            _clienteDomainService = clienteDomainService;
+            _productoDomainService = productoDomainService;
         }
-        public async Task<string> PostClienteApplicationService(Cliente cliente)
+        public async Task<string> PostProductoApplicationService(Producto producto)
         {
-          
-            var respuestaDomainService = _clienteDomainService.PostClienteDomainService(cliente);
+            var respuestaDomainService = _productoDomainService.PostProductoDomainService(producto);
+
             bool hayErrorEnElDomainService = respuestaDomainService != null;
             if (hayErrorEnElDomainService)
             {
                 return respuestaDomainService;
             }
 
-            _baseDatos.Clientes.Add(cliente);
+            _baseDatos.Productos.Add(producto);
             await _baseDatos.SaveChangesAsync();
 
             return null;
+
         }
-        public async Task<string> GetClienteApplicationService(int id)
+        public async Task<string> GetProductoApplicationService(int id)
         {
-            var cliente = await _baseDatos.Clientes.FirstOrDefaultAsync(c => c.idCliente == id);
-            var respuestaDomainService = _clienteDomainService.PostClienteDomainService(cliente);
+            var producto = await _baseDatos.Productos.FirstOrDefaultAsync(p => p.idProducto == id);
+            var respuestaDomainService = _productoDomainService.GetProductoDomainService(id, producto);
 
             bool hayErrorEnElDomainService = respuestaDomainService != null;
             if (hayErrorEnElDomainService)
             {
                 return respuestaDomainService;
             }
+
             return null;
         }
     }

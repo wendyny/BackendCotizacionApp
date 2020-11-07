@@ -29,14 +29,14 @@ namespace BackendCotizacionApp.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Cliente>>> GetClientes()
         {
-            return await _context.Clientes.ToListAsync();
+            return await _context.Clientes.Include(c => c.Cotizaciones).ToListAsync();
         }
 
        
         [HttpGet("{id}")]
         public async Task<ActionResult<Cliente>> GetCliente(int id)
         {
-            var cliente = await _context.Clientes.FindAsync(id);
+            var cliente = await _context.Clientes.Include(c => c.Cotizaciones).FirstOrDefaultAsync(c => c.idCliente == id);
 
             if (cliente == null)
             {
@@ -73,7 +73,7 @@ namespace BackendCotizacionApp.Controllers
             bool noHayErrorEnValidaciones = respuestaClienteAppService == null;
             if (noHayErrorEnValidaciones)
             {
-                return CreatedAtAction("GetCliente", new { id = cliente.idCliente }, cliente);
+                return CreatedAtAction(nameof(GetCliente), new { id = cliente.idCliente }, cliente);
             }
 
             return BadRequest(respuestaClienteAppService);   

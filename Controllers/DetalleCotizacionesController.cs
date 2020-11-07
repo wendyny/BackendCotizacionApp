@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BackendCotizacionApp.DataContext;
 using BackendCotizacionApp.Models;
+using BackendCotizacionApp.AppServices;
 
 namespace BackendCotizacionApp.Controllers
 {
@@ -15,20 +16,22 @@ namespace BackendCotizacionApp.Controllers
     public class DetalleCotizacionesController : ControllerBase
     {
         private readonly CotizacionAppDbContext _context;
+        private readonly DetalleCotizacionAppService _detalleCotizacionAppService;
 
-        public DetalleCotizacionesController(CotizacionAppDbContext context)
+        public DetalleCotizacionesController(CotizacionAppDbContext context, DetalleCotizacionAppService detalleCotizacionAppService)
         {
             _context = context;
+            _detalleCotizacionAppService = detalleCotizacionAppService;
         }
 
-        // GET: api/DetalleCotizaciones
+         
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DetalleCotizacion>>> GetDetallesCotizacion()
         {
             return await _context.DetallesCotizacion.ToListAsync();
         }
 
-        // GET: api/DetalleCotizaciones/5
+         
         [HttpGet("{id}")]
         public async Task<ActionResult<DetalleCotizacion>> GetDetalleCotizacion(int id)
         {
@@ -42,9 +45,7 @@ namespace BackendCotizacionApp.Controllers
             return detalleCotizacion;
         }
 
-        // PUT: api/DetalleCotizaciones/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        
         [HttpPut("{id}")]
         public async Task<IActionResult> PutDetalleCotizacion(int id, DetalleCotizacion detalleCotizacion)
         {
@@ -74,19 +75,22 @@ namespace BackendCotizacionApp.Controllers
             return NoContent();
         }
 
-        // POST: api/DetalleCotizaciones
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        
         [HttpPost]
         public async Task<ActionResult<DetalleCotizacion>> PostDetalleCotizacion(DetalleCotizacion detalleCotizacion)
         {
-            _context.DetallesCotizacion.Add(detalleCotizacion);
-            await _context.SaveChangesAsync();
+            var respuestaDetalleAppService = await _detalleCotizacionAppService.PostDetalleCotizacionApplicationService(detalleCotizacion);
 
-            return CreatedAtAction("GetDetalleCotizacion", new { id = detalleCotizacion.idDetalle }, detalleCotizacion);
+            bool noHayErroresEnLasValidaciones = respuestaDetalleAppService == null;
+            if (noHayErroresEnLasValidaciones)
+            {
+                return CreatedAtAction(nameof(GetDetalleCotizacion), new { id = detalleCotizacion.idDetalle }, detalleCotizacion);
+            }
+            return BadRequest(respuestaDetalleAppService);
+
         }
 
-        // DELETE: api/DetalleCotizaciones/5
+         
         [HttpDelete("{id}")]
         public async Task<ActionResult<DetalleCotizacion>> DeleteDetalleCotizacion(int id)
         {

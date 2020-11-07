@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BackendCotizacionApp.DataContext;
 using BackendCotizacionApp.Models;
+using BackendCotizacionApp.AppServices;
 
 namespace BackendCotizacionApp.Controllers
 {
@@ -15,24 +16,26 @@ namespace BackendCotizacionApp.Controllers
     public class CategoriasController : ControllerBase
     {
         private readonly CotizacionAppDbContext _context;
+        private readonly CategoriaAppService _categoriaAppService;
 
-        public CategoriasController(CotizacionAppDbContext context)
+        public CategoriasController(CotizacionAppDbContext context, CategoriaAppService categoriaAppService)
         {
             _context = context;
+            _categoriaAppService = categoriaAppService;
         }
 
-        // GET: api/Categorias
+         
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Categoria>>> GetCategorias()
         {
-            return await _context.Categorias.ToListAsync();
+            return await _context.Categorias.Include(p=>p.ProductosPorCategoria).ToListAsync();
         }
 
-        // GET: api/Categorias/5
+         
         [HttpGet("{id}")]
         public async Task<ActionResult<Categoria>> GetCategoria(int id)
         {
-            var categoria = await _context.Categorias.FindAsync(id);
+            var categoria = await _context.Categorias.Include(p => p.ProductosPorCategoria).FirstOrDefaultAsync(c=>c.idCategoria==id);
 
             if (categoria == null)
             {
@@ -42,9 +45,7 @@ namespace BackendCotizacionApp.Controllers
             return categoria;
         }
 
-        // PUT: api/Categorias/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+ 
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCategoria(int id, Categoria categoria)
         {
@@ -54,39 +55,28 @@ namespace BackendCotizacionApp.Controllers
             }
 
             _context.Entry(categoria).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CategoriaExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+             await _context.SaveChangesAsync();
+           
+           
             return NoContent();
         }
 
-        // POST: api/Categorias
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+         
         [HttpPost]
         public async Task<ActionResult<Categoria>> PostCategoria(Categoria categoria)
         {
-            _context.Categorias.Add(categoria);
-            await _context.SaveChangesAsync();
+            var respuestaCategoriaAppService = await _categoriaAppService.PostCategoriaApplicationService(categoria);
 
-            return CreatedAtAction("GetCategoria", new { id = categoria.idCategoria }, categoria);
+            bool noHayErroresEnLasValidaciones = respuestaCategoriaAppService == null;
+            if (noHayErroresEnLasValidaciones)
+            {
+                return CreatedAtAction(nameof(GetCategoria), new { id = categoria.idCategoria }, categoria);
+            }
+            return BadRequest(respuestaCategoriaAppService);
+
         }
 
-        // DELETE: api/Categorias/5
+       
         [HttpDelete("{id}")]
         public async Task<ActionResult<Categoria>> DeleteCategoria(int id)
         {

@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 
 namespace BackendCotizacionApp.DomainServices
 {
-    public class ClienteDomainService
-    {
-       
+        public class ClienteDomainService
+        {
         public string GetClienteDomainService(int id, Cliente cliente)
         {
-            if (cliente == null)
+          if (cliente == null)
             {
                 return "El cliente no existe";
             }

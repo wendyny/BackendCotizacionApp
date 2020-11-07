@@ -27,14 +27,14 @@ namespace BackendCotizacionApp.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuarios()
         {
-            return await _context.Usuarios.Include(u=>u.Cotizaciones).ToListAsync();
+            return await _context.Usuarios.Include(p => p.Productos).Include(c=>c.Cotizaciones).ToListAsync();
         }
 
        
         [HttpGet("{id}")]
         public async Task<ActionResult<Usuario>> GetUsuario(int id)
         {
-            var usuario = await _context.Usuarios.FindAsync(id);
+            var usuario = await _context.Usuarios.Include(p => p.Productos).Include(c => c.Cotizaciones).FirstOrDefaultAsync(u => u.idUsuario == id);
 
             if (usuario == null)
             {
@@ -71,9 +71,7 @@ namespace BackendCotizacionApp.Controllers
                 return CreatedAtAction("GetUsuario", new { id = usuario.idUsuario }, usuario);
             }
 
-            return BadRequest(respuestaUsuarioAppService);
-         
-            
+            return BadRequest(respuestaUsuarioAppService);    
         }
 
         

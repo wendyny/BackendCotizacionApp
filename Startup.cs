@@ -32,10 +32,16 @@ namespace BackendCotizacionApp
             services.AddDbContext<CotizacionAppDbContext>();
             services.AddScoped<UsuarioAppService>();
             services.AddScoped<ClienteAppService>();
-            services.AddScoped<UsuarioAppService>();
+            services.AddScoped<CategoriaAppService>();
+            services.AddScoped<CotizacionAppService>();
+            services.AddScoped<ProductoAppService>();
+            services.AddScoped<DetalleCotizacionAppService>();
+            services.AddScoped<DetalleCotizacionDomainService>();
             services.AddScoped<ClienteDomainService>();
             services.AddScoped<CotizacionDomainService>();
             services.AddScoped<UsuarioDomainService>();
+            services.AddScoped<CategoriaDomainService>();
+            services.AddScoped<ProductoDomainService>();
             services.AddMvc().AddNewtonsoftJson(option => option.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             services.AddControllers();
         }

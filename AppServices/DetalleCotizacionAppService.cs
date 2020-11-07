@@ -9,35 +9,37 @@ using System.Threading.Tasks;
 
 namespace BackendCotizacionApp.AppServices
 {
-       public class UsuarioAppService
+    public class DetalleCotizacionAppService
     {
         private readonly CotizacionAppDbContext _baseDatos;
-        private readonly UsuarioDomainService _usuarioDomainService;
+        private readonly DetalleCotizacionDomainService _detalleCotizacionDomainService;
 
-        public UsuarioAppService(CotizacionAppDbContext _context, UsuarioDomainService usuarioDomainService)
+        public DetalleCotizacionAppService(CotizacionAppDbContext _context, DetalleCotizacionDomainService detalleCotizacionDomainService)
         {
             _baseDatos = _context;
-            _usuarioDomainService = usuarioDomainService;
+            _detalleCotizacionDomainService = detalleCotizacionDomainService;
         }
-        public async Task<string> PostUsuarioApplicationService(Usuario usuario)
+        public async Task<string> PostDetalleCotizacionApplicationService(DetalleCotizacion detalleCotizacion )
         {
             
-            var respuestaDomainService = _usuarioDomainService.PostUsuarioDomainService(usuario);
+            var respuestaDomainService = _detalleCotizacionDomainService.PostDetalleCotizacionDomainService(detalleCotizacion);
 
             bool hayErrorEnElDomainService = respuestaDomainService != null;
             if (hayErrorEnElDomainService)
             {
                 return respuestaDomainService;
             }
-            _baseDatos.Usuarios.Add(usuario);
+
+            _baseDatos.DetallesCotizacion.Add(detalleCotizacion);
             await _baseDatos.SaveChangesAsync();
+
             return null;
 
         }
-        public async Task<string> GetUsuarioApplicationService(int id)
+        public async Task<string> GetDetalleCotizacionApplicationService(int id)
         {
-            var usuario = await _baseDatos.Usuarios.FirstOrDefaultAsync(c => c.idUsuario == id);
-            var respuestaDomainService = _usuarioDomainService.GetUsuarioDomainService(id, usuario);
+            var detalle= await _baseDatos.DetallesCotizacion.FirstOrDefaultAsync(d => d.idDetalle == id);
+            var respuestaDomainService = _detalleCotizacionDomainService.GetDetalleCotizacionDomainService(id, detalle);
 
             bool hayErrorEnElDomainService = respuestaDomainService != null;
             if (hayErrorEnElDomainService)
@@ -46,8 +48,6 @@ namespace BackendCotizacionApp.AppServices
             }
 
             return null;
-
         }
-
     }
 }

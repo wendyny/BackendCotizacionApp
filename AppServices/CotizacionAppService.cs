@@ -19,10 +19,9 @@ namespace BackendCotizacionApp.AppServices
             _baseDatos = _context;
             _cotizacionDomainService = cotizacionDomainService;
         }
-        public async Task<string> GetCotizacionApplicationService(int id)
+        public async Task<string> PostCotizacionApplicationService(Cotizacion cotizacion)
         {
-            var cotizacion = await _baseDatos.Cotizaciones.FirstOrDefaultAsync(c=>c.idCotizacion==id);
-            var respuestaDomainService = _cotizacionDomainService.GetCotizacionDomainService(id,cotizacion);
+            var respuestaDomainService = _cotizacionDomainService.PostCotizacionDomainService(cotizacion);
 
             bool hayErrorEnElDomainService = respuestaDomainService != null;
             if (hayErrorEnElDomainService)
@@ -32,6 +31,19 @@ namespace BackendCotizacionApp.AppServices
 
             _baseDatos.Cotizaciones.Add(cotizacion);
             await _baseDatos.SaveChangesAsync();
+
+            return null;
+        }
+        public async Task<string> GetCotizacionApplicationService(int id)
+        {
+            var cotizacion = await _baseDatos.Cotizaciones.FirstOrDefaultAsync(c => c.idCotizacion == id);
+            var respuestaDomainService = _cotizacionDomainService.PostCotizacionDomainService(cotizacion);
+
+            bool hayErrorEnElDomainService = respuestaDomainService != null;
+            if (hayErrorEnElDomainService)
+            {
+                return respuestaDomainService;
+            }
 
             return null;
         }

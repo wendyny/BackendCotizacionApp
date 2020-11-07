@@ -67,10 +67,15 @@ namespace BackendCotizacionApp.Controllers
         [HttpPost]
         public async Task<ActionResult<Cotizacion>> PostCotizacion(Cotizacion cotizacion)
         {
-            _context.Cotizaciones.Add(cotizacion);
-            await _context.SaveChangesAsync();
+            var respuestaCotizacionAppService = await _cotizacionAppService.PostCotizacionApplicationService(cotizacion);
 
-            return CreatedAtAction("GetCotizacion", new { id = cotizacion.idCotizacion }, cotizacion);
+            bool noHayErroresEnLasValidaciones = respuestaCotizacionAppService == null;
+            if (noHayErroresEnLasValidaciones)
+            {
+                return CreatedAtAction(nameof(GetCotizacion), new { id = cotizacion.idCotizacion }, cotizacion);
+            }
+            return BadRequest(respuestaCotizacionAppService);
+            
         }
 
 
