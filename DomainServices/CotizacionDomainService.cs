@@ -19,11 +19,7 @@ namespace BackendCotizacionApp.DomainServices
         public string PostCotizacionDomainService(Cotizacion cotizacion)
         {
 
-            if (cotizacion.Usuario.idUsuario == 0)
-            {
-                return "El id del usuario es invalido";
-            }
-            if (cotizacion.Cliente.idCliente==0)
+            if (cotizacion.idCliente ==0)
             {
                 return "El id del cliente es invalido";
             }

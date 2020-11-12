@@ -18,15 +18,7 @@ namespace BackendCotizacionApp.DomainServices
         }
         public string PostDetalleCotizacionDomainService(DetalleCotizacion detalleCotizacion)
         {
-            if (detalleCotizacion.idDetalle == 0)
-            {
-                return "Por favor ingrese un id detalle de cotizacion";
-            }
-
-            if (detalleCotizacion.idProducto == 0)
-            {
-                return "Por favor ingrese un id producto de cotizacion";
-            }
+           
             if (detalleCotizacion.cantidadProducto == 0)
             {
                 return "Por favor ingrese la cantidad del producto deseado";

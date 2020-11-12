@@ -19,18 +19,13 @@ namespace BackendCotizacionApp.DomainServices
         }
         public string PostProductoDomainService(Producto producto)
         {
-            if (producto.idUsuario == 0)
+            if (producto.urlFotoProducto == "")
             {
-                return "Por favor ingrese un id de usuario valido";
+                return "Por favor ingrese el URL de la foto del producto/ u o servicio";
             }
-            if (producto.idCategoria !=1 || (producto.idCategoria != 2))
-            {
-                return "Por favor ingrese un id de categoria valido";
-            }
-
             if (producto.descripcionProducto == "")
             {
-                return "Por favor ingrese una descripcion del producto o servicio";
+                return "Por favor ingrese una descripcion del producto/u o servicio";
             }
             if (producto.precio == 0)
             {
@@ -40,7 +35,16 @@ namespace BackendCotizacionApp.DomainServices
             {
                 return "Por favor ingrese un tipo de categoria valido";
             }
+            if (producto.idUsuario == 0)
+            {
+                return "Por favor ingrese un id de usuario valido";
+            }
+            if (producto.idCategoria!=producto.tipo)
+            {
+                return "Por favor ingrese un id de categoria valido";
+            }
 
+           
             return null;
         }
     }
